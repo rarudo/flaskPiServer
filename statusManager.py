@@ -2,6 +2,7 @@ import numpy as np
 import ipaddress
 from datetime import datetime
 
+
 class rpiStatus:
     def __init__(self):
         self.networks = [
@@ -21,13 +22,14 @@ class rpiStatus:
         self.dockerMount = 20
 
         # 全てのDockerのステータス、8x21の行列初期値は全てFalse
-        self.dockerStatuses = np.zeros((self.rpiMount, self.dockerMount), dtype=bool)
+        self.dockerAccesses = np.zeros((self.rpiMount, self.dockerMount), dtype=bool)
         # 全てのラズパイのステータス、1x8の行列初期値は全てFalse
         self.rpiStatuses = np.zeros((self.rpiMount), dtype=bool)
         # アクセスのあった時間を格納する
-        self.accesTimes = np.array((self.rpiMount, self.dockerMount))
-        self.accesTimes.fill(datetime.now())
-
+        # self.accesTimes = np.array((self.rpiMount, self.dockerMount), dtype='datetime64')
+        # self.accesTimes.fill(datetime.now())
+        self.accessTimes = np.empty((self.rpiMount, self.dockerMount), dtype='datetime64[ms]')
+        self.accessTimes.fill(np.datetime64(datetime.now()))
 
     # ipアドレスがnetworksの何番目に含まれているのかを返す
     # 含まれていない場合はNone
@@ -38,7 +40,20 @@ class rpiStatus:
                 index = i
         return index
 
+    def getDockerStatuses(self):
+        nowTimes = np.empty((self.rpiMount, self.dockerMount), dtype='datetime64[ms]')
+        nowTimes.fill(np.datetime64(datetime.now()))
+
+        # 何秒前にアクセスされたかを計算
+        diffTimes = (nowTimes - self.accessTimes)
+        # n秒以内にアクセスされていればTrueいなければFalse
+        diffBool = (diffTimes < np.datetime64(4,'s').astype("m8[s]"))
+        # 論理和を返す
+        # アクセスかつn秒以内にアクセスがあればTrue
+        return np.logical_and(diffBool, self.dockerAccesses)
+
     # 引数に入れられたipからステータスを更新する
+    # postされた時に呼ばれる
     def refleshStatus(self, ipStr):
         # 文字列で渡されたipをpythonのipadressに変換
         ip = ipaddress.ip_address(ipStr)
@@ -58,9 +73,7 @@ class rpiStatus:
         # と想定しているため、00 01を取得したい
         dockerId = ipStr.split(".")[-1]
         dockerId = int(dockerId[-2:])
-
-        # 結果を格納
-        self.dockerStatuses[nwIndex][dockerId] = True
         self.rpiStatuses[nwIndex] = True
+        self.dockerAccesses[nwIndex][dockerId] = True
         # アクセスされた時間を格納
-        self.accesTimes = datetime.now()
+        self.accessTimes[nwIndex][dockerId] = np.datetime64(datetime.now())

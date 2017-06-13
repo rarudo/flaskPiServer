@@ -38,7 +38,7 @@ def getTask():
 def getDockerStatus():
     dict = {}
     # numpyをdictに直して、jsonにする
-    for i, dockerstatus in enumerate(rpiStatus.dockerStatuses.tolist()):
+    for i, dockerstatus in enumerate(rpiStatus.getDockerStatuses().tolist()):
         name = "rpi" + str(i)
         dict.update({name: dockerstatus})
     return json.dumps(dict)
