@@ -5,6 +5,7 @@ from datetime import datetime
 
 class rpiStatus:
     def __init__(self):
+        # 想定ネットワーク
         self.networks = [
             ipaddress.ip_network("192.168.0.0/24"),
             ipaddress.ip_network("192.168.1.0/24"),
@@ -20,6 +21,9 @@ class rpiStatus:
         self.rpiMount = 8
         # 想定するdockerの数
         self.dockerMount = 20
+
+        # タイムアウト（秒）
+        self.timeout = 4
 
         # 全てのDockerのステータス、8x21の行列初期値は全てFalse
         self.dockerAccesses = np.zeros((self.rpiMount, self.dockerMount), dtype=bool)
@@ -46,8 +50,8 @@ class rpiStatus:
 
         # 何秒前にアクセスされたかを計算
         diffTimes = (nowTimes - self.accessTimes)
-        # n秒以内にアクセスされていればTrueいなければFalse
-        diffBool = (diffTimes < np.datetime64(4,'s').astype("m8[s]"))
+        # timeout秒以内にアクセスされていればTrueいなければFalse
+        diffBool = (diffTimes < np.datetime64(self.timeout, 's').astype("m8[s]"))
         # 論理和を返す
         # アクセスかつn秒以内にアクセスがあればTrue
         return np.logical_and(diffBool, self.dockerAccesses)
