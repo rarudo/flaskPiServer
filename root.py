@@ -16,8 +16,11 @@ def hello_world():
 
     receiveStr = request.data.decode()
     print(receiveStr)
+    # jsonをDictにして読み込み
     jsonDict = json.loads(receiveStr)
+    # bufferに追加
     jsonBuffer.append(jsonDict)
+    # ラズパイとdockerのステータスを更新
     rpiStatus.refleshStatus(jsonDict["ip"])
     return "HelloFromServer\n"
 
@@ -45,4 +48,4 @@ def getDockerStatus():
 
 
 if __name__ == '__main__':
-    app.run(host="192.168.99.4")
+    app.run(host="192.168.98.28")

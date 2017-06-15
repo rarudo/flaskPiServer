@@ -56,6 +56,14 @@ class rpiStatus:
         # アクセスかつn秒以内にアクセスがあればTrue
         return np.logical_and(diffBool, self.dockerAccesses)
 
+    def getRpiStatuses(self):
+        dockersArray = self.getDockerStatuses()
+        rowCont = dockersArray.shape[0]
+        for i in range(rowCont):
+            print("hoge")
+
+        return ""
+
     # 引数に入れられたipからステータスを更新する
     # postされた時に呼ばれる
     def refleshStatus(self, ipStr):
