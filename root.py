@@ -29,8 +29,8 @@ def hello_world():
 def getTask():
     global jsonBuffer
     count = len(jsonBuffer)
-    if count > 200:
-        count = 200
+    if count > 400:
+        count = 400
     responceJson = json.dumps(jsonBuffer[-count:])
     del jsonBuffer[-count:]
     return make_response(responceJson)
@@ -48,4 +48,5 @@ def getDockerStatus():
 
 
 if __name__ == '__main__':
-    app.run(host="192.168.98.28")
+    app.debug = False
+    app.run(host="192.168.98.28",debug="error message'")
