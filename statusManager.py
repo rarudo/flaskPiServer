@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import ipaddress
 from datetime import datetime
@@ -16,6 +17,16 @@ class rpiStatus:
             ipaddress.ip_network("192.168.6.0/24"),
             ipaddress.ip_network("192.168.7.0/24"),
         ]
+        #self.networks = [
+        #    ipaddress.ip_network("5.150.156.0/24"), #America
+        #    ipaddress.ip_network("27.133.174.0/24"),#Japan
+        #    ipaddress.ip_network("1.10.11.0/24"), #China
+        #    ipaddress.ip_network("31.210.136.0/24"), #Russia
+        #    ipaddress.ip_network("45.220.49.0/24"), #Africa
+        #    ipaddress.ip_network("36.37.38.0/24"), #Australia
+        #    ipaddress.ip_network("170.80.5.0//24"), #Brazil
+        #    ipaddress.ip_network("86.105.227.0/24"), #Europe
+        #]
 
         # 想定するラズパイの数
         self.rpiMount = 8
@@ -56,13 +67,6 @@ class rpiStatus:
         # アクセスかつn秒以内にアクセスがあればTrue
         return np.logical_and(diffBool, self.dockerAccesses)
 
-    def getRpiStatuses(self):
-        dockersArray = self.getDockerStatuses()
-        rowCont = dockersArray.shape[0]
-        for i in range(rowCont):
-            print("hoge")
-
-        return ""
 
     # 引数に入れられたipからステータスを更新する
     # postされた時に呼ばれる
